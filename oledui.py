@@ -235,7 +235,7 @@ def onPushState(data):
         oled.activeSong = newSong
         oled.activeArtist = newArtist
         if oled.state == STATE_PLAYER and newStatus != 'stop':
-			SetState(STATE_Standby)
+			SetState(STATE_SHOW_INFO)
 			oled.modal.DisplayStandby(clock, IP)
 
     if newStatus != oled.playState:
