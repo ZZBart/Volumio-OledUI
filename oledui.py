@@ -175,7 +175,7 @@ def SetState(status):
         oled.modal = MenuScreen(oled.HEIGHT, oled.WIDTH, font2, oled.queue, rows=4, selected=oled.playPosition, showIndex=True)
     elif oled.state == STATE_LIBRARY_MENU:
         oled.modal = MenuScreen(oled.HEIGHT, oled.WIDTH, font2, oled.libraryNames, rows=3, label='------ Music Library ------')
-    elif oled.state == STATE_Standby:
+    elif oled.state == STATE_SHOW_INFO:
 	    oled.modal = StandbyScreen(oled.HEIGHT, oled.WIDTH, oled.Clock, oled.IP, font, hugefontaw)
 	
 	
@@ -190,7 +190,7 @@ def onPushState(data):
     if 'wanIP' in data:
         IP = data['wanIP']
     else:
-        IP = getWanIP()
+        IP = ''
     if IP is None:
         IP = ''
         
@@ -235,7 +235,7 @@ def onPushState(data):
         oled.activeSong = newSong
         oled.activeArtist = newArtist
         if oled.state == STATE_PLAYER and newStatus != 'stop':
-                             SetState(STATE_Standby)
+                             SetState(STATE_SHOW_INFO)
 
     if newStatus != oled.playState:
         oled.playState = newStatus
