@@ -197,7 +197,7 @@ def onPushState(data):
     if 'Clock' in data:
         Clock = data['Clock']
     else:
-        Clock = strftime["%H:%M:%S"]
+        Clock = ''
     if Clock is None:   #volumio can push NoneType
        Clock = ''
 
