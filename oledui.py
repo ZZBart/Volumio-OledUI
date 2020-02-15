@@ -236,9 +236,7 @@ def onPushState(data):
         oled.activeArtist = newArtist
 	if oled.state == STATE_PLAYER and newStatus != 'stop':
 		oled.modal.UpdatePlayingInfo(newArtist, newSong)
-        if oled.state == STATE_PLAYER and newStatus == 'stop':
-			SetState(STATE_SHOW_INFO)
-			oled.modal.DisplayStandby(clock, IP)
+       
 
     if newStatus != oled.playState:
         oled.playState = newStatus
@@ -248,7 +246,9 @@ def onPushState(data):
             else:
                 iconTime = 80
             oled.modal.SetPlayingIcon(oled.playState, iconTime)
-
+ 
+if oled.state == STATE_PLAYER and newStatus == 'stop':
+			oled.modal.UpdatePlayingInfo(clock, IP)
 def onPushQueue(data):
     oled.queue = [track['name'] if 'name' in track else 'no track' for track in data]
     print('Queue length is ' + str(len(oled.queue)))
