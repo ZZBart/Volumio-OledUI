@@ -109,24 +109,24 @@ mpd_bufsize		= 8192
 
 
 
-def getWanIP():
+#def getWanIP():
     #can be any routable address,
-    fakeDest = ("223.5.5.5", 53)
-    wanIP = ""
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(fakeDest)
-        wanIP = s.getsockname()[0]
-        s.close()
-    except Exception, e:
-        pass
-    return wanIP
+   # fakeDest = ("223.5.5.5", 53)
+   # wanIP = ""
+  #  try:
+   #     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #    s.connect(fakeDest)
+     #   wanIP = s.getsockname()[0]
+      #  s.close()
+    #except Exception, e:
+     #   pass
+    #return wanIP
 
-def GetLANIP():
-   cmd = "ip addr show eth0 | grep inet  | grep -v inet6 | awk '{print $2}' | cut -d '/' -f 1"
-   p = Popen(cmd, shell=True, stdout=PIPE)
-   output = p.communicate()[0]
-   return output[:-1]
+#def GetLANIP():
+ #  cmd = "ip addr show eth0 | grep inet  | grep -v inet6 | awk '{print $2}' | cut -d '/' -f 1"
+  # p = Popen(cmd, shell=True, stdout=PIPE)
+   #output = p.communicate()[0]
+   #return output[:-1]
 
 
 def display_update_service():
@@ -175,8 +175,8 @@ def SetState(status):
         oled.modal = MenuScreen(oled.HEIGHT, oled.WIDTH, font2, oled.queue, rows=4, selected=oled.playPosition, showIndex=True)
     elif oled.state == STATE_LIBRARY_MENU:
         oled.modal = MenuScreen(oled.HEIGHT, oled.WIDTH, font2, oled.libraryNames, rows=3, label='------ Music Library ------')
-    elif oled.state == STATE_SHOW_INFO:
-	    oled.modal = StandbyScreen(oled.HEIGHT, oled.WIDTH, oled.Clock, oled.IP, font, hugefontaw)
+   #elif oled.state == STATE_SHOW_INFO:
+#	    oled.modal = StandbyScreen(oled.HEIGHT, oled.WIDTH, oled.Clock, oled.IP, font, hugefontaw)
 	
 	
 def LoadPlaylist(playlistname):
@@ -247,7 +247,7 @@ def onPushState(data):
                 iconTime = 80
             oled.modal.SetPlayingIcon(oled.playState, iconTime)
  
-if oled.state == STATE_PLAYER and newStatus == 'stop':
+	if oled.state == STATE_PLAYER and newStatus == 'stop':
 			oled.modal.UpdatePlayingInfo(clock, IP)
 def onPushQueue(data):
     oled.queue = [track['name'] if 'name' in track else 'no track' for track in data]
@@ -300,25 +300,25 @@ def onPushListPlaylist(data):
 
 
 
-class StandbyScreen():
-    def __init__(self, height, width, row1, row2, font, fontaw):
-        self.height = height
-        self.width = width
-        self.font = font
-        self.fontaw = fontaw
-        self.StandbyText1 = StaticText(self.height, self.width, row1, font, center=True)
-        self.StandbyText2 = ScrollText(self.height, self.width, row2, font)
-        self.text1Pos = (3, 6)
-        self.text2Pos = (3, 37)
-        self.alfaimage = Image.new('RGBA', image.size, (0, 0, 0, 0))
+#class StandbyScreen():
+ #   def __init__(self, height, width, row1, row2, font, fontaw):
+  #      self.height = height
+   #     self.width = width
+    #    self.font = font
+     #   self.fontaw = fontaw
+      #  self.StandbyText1 = StaticText(self.height, self.width, row1, font, center=True)
+       # self.StandbyText2 = ScrollText(self.height, self.width, row2, font)
+        #self.text1Pos = (3, 6)
+        #self.text2Pos = (3, 37)
+        #self.alfaimage = Image.new('RGBA', image.size, (0, 0, 0, 0))
  
-    def DisplayStandby(self, row1, row2):
-        self.StandbyText1 = StaticText(self.height, self.width, row1, font, center=True)
-        self.StandbyText2 = ScrollText(self.height, self.width, row2, font)
+    #def DisplayStandby(self, row1, row2):
+     #   self.StandbyText1 = StaticText(self.height, self.width, row1, font, center=True)
+     #   self.StandbyText2 = ScrollText(self.height, self.width, row2, font)
 
-    def DrawOn(self, image):
-            self.StandbyText1.DrawOn(image, self.text1Pos)
-            self.StandbyText2.DrawOn(image, self.text2Pos)
+    #def DrawOn(self, image):
+     #       self.StandbyText1.DrawOn(image, self.text1Pos)
+      #      self.StandbyText2.DrawOn(image, self.text2Pos)
 
 class NowPlayingScreen():
     def __init__(self, height, width, row1, row2, font, fontaw):
