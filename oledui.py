@@ -171,6 +171,8 @@ def onPushState(data):
         oled.activeArtist = newArtist
         if oled.state == STATE_PLAYER and newStatus != 'stop':
             oled.modal.UpdatePlayingInfo(newArtist, newSong)
+        if oled.state == STATE_PLAYER and newStatus == 'stop':
+            oled.modal.UpdatePlayingInfo(newArtist, newSong)
 
     if newStatus != oled.playState:
         oled.playState = newStatus
@@ -181,9 +183,7 @@ def onPushState(data):
                 iconTime = 80
             oled.modal.SetPlayingIcon(oled.playState, iconTime)
     
-    if newStatus != oled.playState:
-        oled.playState = newStatus
-        if oled.state == STATE_PLAYER:
+    if newStatus == oled.playState:
             if oled.playState == 'stop' and oled.state == STATE_PLAYER:
                 oled.modal.UpdatePlayingInfo(oled.time)
 
@@ -259,6 +259,11 @@ class NowPlayingScreen():
         if self.playingIcon != self.icon['stop']:
             self.playingText1.DrawOn(image, self.text1Pos)
             self.playingText2.DrawOn(image, self.text2Pos)
+        if self.playingIcon == self.icon['stop']:
+            self.playingText1.DrawOn(image, self.text1Pos)
+            self.playingText2.DrawOn(image, self.text2Pos)
+           
+            
         if self.iconcountdown > 0:
             compositeimage = Image.composite(self.alfaimage, image.convert('RGBA'), self.alfaimage)
             image.paste(compositeimage.convert('RGB'), (0, 0))
