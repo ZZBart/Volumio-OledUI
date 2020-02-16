@@ -183,9 +183,6 @@ def onPushState(data):
                 iconTime = 80
             oled.modal.SetPlayingIcon(oled.playState, iconTime)
     
-    if newStatus == oled.playState:
-            if oled.playState == 'stop' and oled.state == STATE_PLAYER:
-                oled.modal.UpdatePlayingInfo(oled.time)
 
 def onPushQueue(data):
     oled.queue = [track['name'] if 'name' in track else 'no track' for track in data]
