@@ -2,12 +2,6 @@
 
 from __future__ import unicode_literals
 
-"""
-Volumio User Interface: OLED 256x64 + 2x rotary encoder with pushbutton
-DiehardSK 2019
-Inspired by Volumio HandsOn script
-"""
-
 import requests
 import os
 import sys
@@ -46,7 +40,7 @@ STATE_SHOW_INFO = 4
 STATE_LIBRARY_MENU = 5
 
 UPDATE_INTERVAL = 0.034
-PIXEL_SHIFT_TIME = 120    #time between picture position shifts in sec.
+PIXEL_SHIFT_TIME = 120    #clock between picture position shifts in sec.
 
 interface = spi(device=0, port=0)
 oled = ssd1322(interface, rotate=2) 
@@ -68,9 +62,9 @@ oled.libraryFull = []
 oled.libraryNames = []
 oled.volumeControlDisabled = False
 oled.volume = 100
-now = datetime.now() # current date and time
-oled.time = now.strftime("%H:%M:%S") #resolves time as HH:MM:SS eg. 14:33:15
-oled.date = now.strftime("%d/%m/%y") #resolves time as dd.mm.yyyy eg. 17.04.2020
+now = datetime.now() # current date and clock
+oled.clock = now.strftime("%H:%M:%S") #resolves clock as HH:MM:SS eg. 14:33:15
+oled.date = now.strftime("%d/%m/%y") #resolves clock as dd.mm.yyyy eg. 17.04.2020
 oled.IP = os.popen('ip addr show eth0').read().split("inet ")[1].split("/")[0] #resolves IP from Ethernet Adapator
 emit_volume = False
 emit_track = False
@@ -78,8 +72,8 @@ emit_track = False
 image = Image.new('RGB', (oled.WIDTH + 4, oled.HEIGHT + 4))  #enlarged for pixelshift
 oled.clear()
 
-font = load_font('Roboto-Regular.ttf', 24)
-font2 = load_font('PixelOperator.ttf', 15)
+font = load_font('digi.ttf', 24)
+font2 = load_font('digi.ttf', 15)
 hugefontaw = load_font('fa-solid-900.ttf', oled.HEIGHT - 4)
 fontClock = load_font('digi.ttf', 50)
 fontDate = load_font('digi.ttf', 14)  
@@ -90,11 +84,11 @@ fontIP = load_font('digi.ttf', 14)
 
 def display_update_service():
     pixshift = [2, 2]
-    lastshift = prevTime = time()
+    lastshift = prevTime = clock()
     while UPDATE_INTERVAL > 0:
-        dt = time() - prevTime
-        prevTime = time()
-        if prevTime-lastshift > PIXEL_SHIFT_TIME: #it's time for pixel shift
+        dt = clock() - prevTime
+        prevTime = clock()
+        if prevTime-lastshift > PIXEL_SHIFT_TIME: #it's clock for pixel shift
             lastshift = prevTime
             if pixshift[0] == 4 and pixshift[1] < 4:
                 pixshift[1] += 1
@@ -122,7 +116,7 @@ def display_update_service():
         sleep(UPDATE_INTERVAL)
 
 #Example to SetState:
-#oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH, oled.activeArtist, oled.activeSong, oled.time, oled.IP, font, hugefontaw, fontClock)
+#oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH, oled.activeArtist, oled.activeSong, oled.clock, oled.IP, font, hugefontaw, fontClock)
 #here you have to define which variables you want to use in "class" (following below)
 #simply define which "data" (eg. oled.IP...) you want to display followed by the fonts you want to use
 #Hint: the "data" is equal to row1, row2... etc. in the classes, first "data" is row1 and so on...
@@ -131,7 +125,7 @@ def display_update_service():
 def SetState(status):
     oled.state = status
     if oled.state == STATE_PLAYER:
-        oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH, oled.activeArtist, oled.activeSong, oled.time, oled.IP, oled.date, font, hugefontaw, fontClock, fontDate, fontIP)
+        oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH, oled.activeArtist, oled.activeSong, oled.clock, oled.IP, oled.date, font, hugefontaw, fontClock, fontDate, fontIP)
         oled.modal.SetPlayingIcon(oled.playState, 0)
     elif oled.state == STATE_VOLUME:
         oled.modal = VolumeScreen(oled.HEIGHT, oled.WIDTH, oled.volume, font, font2)
@@ -186,7 +180,12 @@ def onPushState(data):
         if oled.state == STATE_PLAYER and newStatus != 'stop':
             oled.modal.UpdatePlayingInfo(newArtist, newSong)
         if oled.state == STATE_PLAYER and newStatus == 'stop':   #this is the "Standby-Screen"
-            oled.modal.UpdateStandbyInfo(oled.time, oled.IP, oled.date)     #here is defined which "data" should be displayed in the class
+            if  oled.clock != now.strftime("%H:%M:%S") or oled.date != now.strftime("%d/%m/%y"): 
+                oled.clock = now.strftime("%H:%M:%S")
+                oled.date = now.strftime("%d/%m/%y")
+                oled.modal.UpdateStandbyInfo(oled.clock, oled.IP, oled.date)     #here is defined which "data" should be displayed in the class
+        
+
 
     if newStatus != oled.playState:
         oled.playState = newStatus
@@ -224,7 +223,7 @@ def EnterLibraryItem(itemNo):
         volumioIO.emit('clearQueue')        #clear queue and add whole list of items
         oled.queue = []
         volumioIO.emit('addToQueue', oled.libraryFull['navigation']['lists'][0]['items'])
-        oled.stateTimeout = 5.0       #maximum time to load new queue
+        oled.stateTimeout = 5.0       #maximum clock to load new queue
         while len(oled.queue) == 0 and oled.stateTimeout > 0.1:
             sleep(0.1) 
         oled.stateTimeout = 0.2
@@ -256,18 +255,18 @@ class NowPlayingScreen():
         self.fontClock = fontClock
 	self.fontDate = fontDate
 	self.fontIP = fontIP
-        self.playingText1 = StaticText(self.height, self.width, row1, font, center=True)
+        self.playingText1 = StaticText(self.height, self.width, row1, font)    #center=True
         self.playingText2 = ScrollText(self.height, self.width, row2, font)
-	self.standbyText3 = StaticText(self.height, self.width, row3, fontClock, center=True)
+	self.standbyText3 = StaticText(self.height, self.width, row3, fontClock)  #center=True
 	self.standbyText4 = StaticText(self.height, self.width, row4, fontIP)
 	self.standbyText5 = StaticText(self.height, self.width, row5, fontDate)
 	self.icon = {'play':'\uf04b', 'pause':'\uf04c', 'stop':'\uf04d'}
         self.playingIcon = self.icon['play']
         self.iconcountdown = 0
-        self.text1Pos = (3, 6)
-        self.text2Pos = (3, 37)
-	self.text3Pos = (0, 0)
-	self.text4Pos = (2, 48)
+        self.text1Pos = (40, 8)
+        self.text2Pos = (40, 40)
+	self.text3Pos = (42, 0)
+	self.text4Pos = (42, 48)
 	self.text5Pos = (192, 48)
         self.alfaimage = Image.new('RGBA', image.size, (0, 0, 0, 0))
 
@@ -295,7 +294,7 @@ class NowPlayingScreen():
             image.paste(compositeimage.convert('RGB'), (0, 0))
             self.iconcountdown -= 1
             
-    def SetPlayingIcon(self, state, time=0):
+    def SetPlayingIcon(self, state, clock=0):
         if state in self.icon:
             self.playingIcon = self.icon[state]
         self.alfaimage.paste((0, 0, 0, 0), [0, 0, image.size[0], image.size[1]])
@@ -303,7 +302,7 @@ class NowPlayingScreen():
         iconwidth, iconheight = drawalfa.textsize(self.playingIcon, font=self.fontaw)
         left = (self.width - iconwidth) / 2
         drawalfa.text((left, 4), self.playingIcon, font=self.fontaw, fill=(255, 255, 255, 96))
-        self.iconcountdown = time
+        self.iconcountdown = clock
 
 class VolumeScreen():
     def __init__(self, height, width, volume, font, font2):
@@ -312,13 +311,13 @@ class VolumeScreen():
         self.font = font
         self.font2 = font2
         self.volumeLabel = None
-        self.labelPos = (10, 5)
+        self.labelPos = (40, 5)
         self.volumeNumber = None
-        self.numberPos = (10, 25)
+        self.numberPos = (40, 25)
         self.barHeight = 22
         self.barWidth = 140
         self.volumeBar = Bar(self.height, self.width, self.barHeight, self.barWidth)
-        self.barPos = (85, 27)
+        self.barPos = (105, 27)
         self.volume = 0
         self.DisplayVolume(volume)
 
@@ -344,8 +343,8 @@ class MenuScreen():
             self.hasLabel = 0
         else:
             self.hasLabel = 1
-        self.labelPos = (1, 3)
-        self.menuYPos = 3 + 16 * self.hasLabel
+        self.labelPos = (42, 0)
+        self.menuYPos = 42 + 16 * self.hasLabel
         self.menurows = rows
         self.menuText = [None for i in range(self.menurows)]
         self.menuList = menuList
