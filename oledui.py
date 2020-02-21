@@ -113,7 +113,9 @@ def display_update_service():
             print "render error"
         cimg = image.crop((pixshift[0], pixshift[1], pixshift[0] + oled.WIDTH, pixshift[1] + oled.HEIGHT)) 
         oled.display(cimg)
-        sleep(UPDATE_INTERVAL)
+        if oled.time != now.strftime("%H:%M:%S"):
+            oled.time = now.strftime("%H:%M:%S")  
+	sleep(UPDATE_INTERVAL)
 
 #Example to SetState:
 #oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH, oled.activeArtist, oled.activeSong, oled.time, oled.IP, font, hugefontaw, fonttime)
