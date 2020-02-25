@@ -593,7 +593,7 @@ receive_thread.start()
 volumioIO.on('pushState', onPushState)
 volumioIO.on('pushListPlaylist', onPushListPlaylist)
 volumioIO.on('pushQueue', onPushQueue)
-volumioIO.on('pushBrowseSources', onPushBrowseSources)
+#volumioIO.on('pushBrowseSources', onPushBrowseSources)
 volumioIO.on('pushBrowseLibrary', onLibraryBrowse)
 
 # get list of Playlists and initial state
