@@ -70,8 +70,8 @@ oled.IP = os.popen('ip addr show eth0').read().split("inet ")[1].split("/")[0] #
 emit_volume = False
 emit_track = False
 oled.activeFormat = '' #makes oled.activeFormat usable in onPushState
-oled.activeSamplerate = '0' #makes oled.activeSamplerate usable in onPushState
-oled.activeBitdepth = '0' #makes oled.activeBitdepth usable in onPushState
+oled.activeSamplerate = '' #makes oled.activeSamplerate usable in onPushState
+oled.activeBitdepth = '' #makes oled.activeBitdepth usable in onPushState
 
 image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  #for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4)) 
 oled.clear()
