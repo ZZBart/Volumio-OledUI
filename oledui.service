@@ -1,13 +1,13 @@
 [Unit]
-Description=Volumio oled UI
+Description=Volumio oled UI nightly
  
 [Service]
 Type=simple
 WorkingDirectory=/home/volumio
-ExecStart=/usr/bin/python -u /home/volumio/Volumio-OledUI/oledui.py
+ExecStart=/usr/bin/python -u /home/volumio/Volumio-OledUI/oledui-nightly.py
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=oledui
+SyslogIdentifier=oledui-nightly
 User=volumio
 Group=volumio
  
